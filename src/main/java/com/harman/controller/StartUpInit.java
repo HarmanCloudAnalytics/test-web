@@ -23,7 +23,7 @@ public class StartUpInit{
 	Logger logger = HarmanUtils.returnLogObject(this);
 	static StartUpInit statup;
 	
-	private static BlockingQueue<AppMessage> mainQueue = new ArrayBlockingQueue<>(100);
+	private static BlockingQueue<AppMessage> mainQueue = new ArrayBlockingQueue<>(500);
 	private ExecutorService executorService;
 	public static StartUpInit getStartUIntance(){
 		return statup;
@@ -33,8 +33,8 @@ public class StartUpInit{
 	public void initTcpServer()
 	{
 		statup=this;
-		System.out.println("On app startup:: before starting Tcp server thread \n");
-		logger.info("On app startup:: before starting Tcp server thread");
+		System.out.println("** App startup logs *** \n");
+		logger.info("*** App startup logs ***");
 
 		BasicThreadFactory factory = new BasicThreadFactory.Builder()
 				.namingPattern("server-thread").build();
@@ -48,12 +48,13 @@ public class StartUpInit{
 					//CountryCodeTable country_code = CountryCodeTable.getInstance();
 					//country_code.tableCreate();
 					//new Thread(country_code).start();
-					//System.out.println("Country code Thread started");
+					//System.out.println("On App startup: Country code Thread started");
+					//logger.info("On App startup: Country code Thread started");
 					
-					MainServer serevr =MainServer.getInstance();
+					MainServer serevr = MainServer.getInstance();
 					new Thread(serevr).start();
-					System.out.println("On app startup:: Streaming server thread started \n");
-					logger.info("On app startup:: Streaming Server thread started");
+					System.out.println("On app startup: Streaming server thread started \n");
+					logger.info("On app startup: Streaming Server thread started");
 										
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

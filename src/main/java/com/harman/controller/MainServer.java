@@ -122,10 +122,10 @@ public class MainServer extends Thread {
 			// find an unassigned subserver (waiter)
 			
 			if (this.m_clientConnections[client_idx] == null) {
-				System.out.println("Adding new subserver at index:"+ client_idx);
-				logger.info("Adding new subserver at index:"+ client_idx);
+				//System.out.println("Adding new subserver at index:"+ client_idx);
+				logger.info("Adding new subserver at Index:"+ client_idx);
 				this.m_clientConnections[client_idx] = new SubServer(client_connection, client_idx);
-				System.out.println("Adding new subserver :"+ m_clientConnections[client_idx]);
+				//System.out.println("Adding new subserver :"+ m_clientConnections[client_idx]);
 				logger.info("Adding new subserver :"+ m_clientConnections[client_idx]);
 				break;
 				}

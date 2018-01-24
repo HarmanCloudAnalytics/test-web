@@ -28,15 +28,15 @@ public class Consumer implements Runnable{
 	@Override
 	public void run() {
 		long thread_id = Thread.currentThread().getId();
-		System.out.println("Consumer thread running...Id: "+ threadId + "with Fd:"+ activeSocket + "Thread:" + thread_id);
-		logger.info("Consumer thread started Id: " + threadId + "with Fd:"+ activeSocket + "Thread:" + thread_id);
+		//System.out.println("Consumer thread running with Fd:"+ activeSocket + "Thread_Id:" + thread_id);
+		logger.info("Consumer thread started with Fd:"+ activeSocket + "thread_Id:" + thread_id);
 		while(threadRunning){
 			synchronized (queue){
 				while(queue.size() == 0)
 				{
 					try {
-						System.out.println("Queue is empty, Consumer" +threadId + "is waiting");
-						logger.info("Queue is empty, Consumer" +threadId + "is waiting");
+						//System.out.println("Queue is empty, Consumer" +threadId + "is waiting");
+						logger.info("Queue is empty, Consumer" +thread_id + "is waiting");
 						queue.wait();
 
 					} catch (InterruptedException e1) {
@@ -49,8 +49,8 @@ public class Consumer implements Runnable{
 					try {
 						
 						handleClientRequest(activeSocket, threadId, queue.take().getMsg().toString());
-						System.out.println("Messge fed to spark by thread:" +threadId +" \n");
-						logger.info("Message fed to spark by thread:" +threadId + "\n");
+						//System.out.println("Messge fed to spark by thread:" +thread_id +" \n");
+						logger.info("JSON message fed to spark by Thread:" +thread_id + "\n");
 					} catch (Exception e) {
 						logger.error("Error in consumer, Msg:"+ e.getMessage());
 						System.out.println("exception");
@@ -63,9 +63,9 @@ public class Consumer implements Runnable{
 	
 	public void handleClientRequest(Socket socket, int connection_id, String jsonReq) {
 		try {
-			logger.info("Before \n" + jsonReq);
+			//logger.info("Before \n" + jsonReq);
 			jsonReq = jsonReq.replace("\n", "") + "\n";
-			logger.info("after \n removed" + jsonReq);
+			//logger.info("after \n removed" + jsonReq);
 			socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			socketWriter.write(jsonReq);
 			socketWriter.flush();

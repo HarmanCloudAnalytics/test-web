@@ -40,6 +40,9 @@ public class CountryCodeTable implements Runnable{
 				(Long.parseLong(ipArray[2]))*256 + (Long.parseLong(ipArray[3])*1);
 		return result;
 	}
+	
+	
+	@Override
 	public void run() {
 		tableCreate();
 		
@@ -51,9 +54,10 @@ public class CountryCodeTable implements Runnable{
 			long endRange = 0; 
 			String countryCode = null;
 			Connection con = null;
-			File file = new File("D:\\country.xls");
+			File file = new File("/country.xls");
+			System.out.println("Reading from country code file");
 			MariaModel mariaModel = MariaModel.getInstance();
-            con = mariaModel.openConnection();
+            con = mariaModel.openConnection("COUNTRY_CODE");
 			try {
 				InputStream myFile = new FileInputStream(file);
 				POIFSFileSystem myFileSystem = new POIFSFileSystem(myFile);
@@ -61,37 +65,40 @@ public class CountryCodeTable implements Runnable{
 				HSSFSheet mySheet = myWorkBook.getSheetAt(0);
 				Iterator rowIter = mySheet.rowIterator();
 				//rowIter.next();
-				int flag = -1;
+				int columIndx = -1;
+				System.out.println("Iterate file \n");
 				while (rowIter.hasNext()) {
-					flag = 0;
+					columIndx = 0;
 	                HSSFRow myRow = (HSSFRow) rowIter.next();
 	                Iterator<?> cellIter = myRow.cellIterator();
 	                List<HSSFCell> cellRowList = new ArrayList<HSSFCell>();
 	                //System.out.println("Row: "+ myRow.toString());
+	                HSSFCell myCell = null;
 	                while (cellIter.hasNext()) {
-	                	flag ++;
-	                    HSSFCell myCell = (HSSFCell) cellIter.next();
-	                    if( flag == 1)
+	                	columIndx ++;
+	                     myCell = (HSSFCell) cellIter.next();
+	                    if( columIndx == 1)
 	                    	startRange = getNumericValue(myCell.toString());
-	                    if (flag == 2)
+	                    if (columIndx == 2)
 	                    	endRange = getNumericValue(myCell.toString());
-	                    if (flag ==3)
+	                    if (columIndx ==3)
 	                    	countryCode = myCell.toString();
 	                    cellRowList.add(myCell);	                                       
 	                }
-	                //System.out.println("each cell"+ cellRowList.toString());
-	                String sql = 
+	                System.out.println("Row: "+ myCell +"\n" );
+	                String query = 
 	                		"INSERT INTO countrycodetable (startRange, endRange, countryCode) VALUES"
 	                		+ "(" + startRange + "," + endRange + ",'" + countryCode + "')";
 	                
-	                mariaModel.insertCountryCode(sql, con);
+	                mariaModel.insertCountryCode(query, con);
 	             	}	
 				con.close();
 			} catch(IOException e) {
-				System.out.println("Error in openeing a workbook: " +e);
-			} catch (SQLException e) {
+				System.out.println("Error in closing sql connection " +e);
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.out.println("Error in workbook handeling: " +e);
 			}
 			System.out.println("Success import excel to mysql table");
 		}

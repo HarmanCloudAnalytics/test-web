@@ -2,6 +2,7 @@ package com.harman.controller;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
 
@@ -49,30 +50,36 @@ public class TestController implements DBkeys {
 	        return new StringTokenizer(xForwardedForHeader, ",").nextToken().trim();
 	    }
 	}
+	
+	public String getCountryCode(HttpServletRequest context)
+	{
+		String ipAddress = getClientIpAddress(context);
+		logger.info("Client Ip is:"  + ipAddress);
+		CountryCodeTable country_code = CountryCodeTable.getInstance();
+		long numericIp = country_code.getNumericValue(ipAddress);
+		Connection con = null;
+
+		String query = "select from countrycodetable where startRange <= "+numericIp+" and endRange >= numericIp";
+
+		MariaModel mariaModel = MariaModel.getInstance();
+		con = mariaModel.openConnection("COUNTRY_CODE");
+		String countryCode = mariaModel.getCountryCode(con, query);
+		try {
+			con.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return countryCode;
+	}
 
 	@RequestMapping(value = "/mongoDB", method = RequestMethod.POST)
-	public @ResponseBody String saveData(@RequestBody String requestBody){ //, HttpServletRequest context) {
-		//String ipAddress = getClientIpAddress(context);
-		//logger.info("Client Ip is:"  + ipAddress);
-		//CountryCodeTable country_code = CountryCodeTable.getInstance();
-		//long numericIp = country_code.getNumericValue(ipAddress);
-		//Connection con = null;
+	public @ResponseBody String saveData(@RequestBody String requestBody, HttpServletRequest context) {
 		
-		//String query = "select from countrycodetable where startRange <= "+numericIp+" and endRange >= numericIp";
-		
-		//MariaModel mariaModel = MariaModel.getInstance();
-        //con = mariaModel.openConnection();
-		//String code = mariaModel.getCountryCode(con, query);
-		//try {
-			//con.close();
-		//} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-		//}
 		
 		JSONObject retunResponse = new JSONObject();
 		JSONObject jsonReq = new JSONObject(requestBody);
-		//jsonReq.put("CountryCode", code);
+		//jsonReq.put("CountryCode", getCountryCode(context));
 		requestBody = jsonReq.toString();
 		try {
 						
@@ -91,14 +98,14 @@ public class TestController implements DBkeys {
 						AppMessage e = new AppMessage(requestBody+ "\n");
 						msgQueue.put(e);
 						retunResponse.put("status", "1");
-						retunResponse.put("message", "JSON sent to queue");
+						retunResponse.put("Message", "JSON sent to queue");
 						System.out.println("JSON sent to queue");
-						logger.info("Json sent to queue");
+						logger.info("JSON sent to queue");
 						msgQueue.notifyAll();
 					} else {
 						retunResponse.put("status", "0");
 						retunResponse.put("message", "Queue is full");
-						logger.fatal("Queue is full");
+						logger.fatal("$$$$  Queue is full  $$$$$");
 					}	
 				}
 			}else {
@@ -123,7 +130,7 @@ public class TestController implements DBkeys {
 		try {
 			JSONObject jsonObject = new JSONObject(requestBody);
 			MariaModel mariaModel = MariaModel.getInstance();
-			Connection connection = mariaModel.openConnection();
+			Connection connection = mariaModel.openConnection("device_info_store");
 			HarmanParser harmanParser = new HarmanParser();
 			HarmanDeviceModel deviceModel = null;
 			try {

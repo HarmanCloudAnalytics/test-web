@@ -29,13 +29,12 @@ public class MariaModel implements MariaStructure, DBkeys {
 
 	Connection connn = null;
 
-	public Connection openConnection() {
+	public Connection openConnection(String database) {
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			// STEP 3: Open a connection
 			System.out.println("Connecting to a selected database...");
-			//connn = DriverManager.getConnection("jdbc:mariadb://localhost/COUNTRY_CODE", "root", "");
-			connn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1/DEVICE_INFO_STORE", "root", "");
+			connn = DriverManager.getConnection("jdbc:mariadb://localhost/"+database, "root", "");
 			System.out.println("Connected database successfully...");
 		} catch (SQLException e) {
 			System.out.println("Failed to connect db");
