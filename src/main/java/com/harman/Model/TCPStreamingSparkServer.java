@@ -31,7 +31,7 @@ public class TCPStreamingSparkServer {
 	}
 	public void StartTCPServer(String jsonReq) throws IOException {
 
-		serverSocket = new ServerSocket(9997, 100, InetAddress.getByName("10.0.0.5"));
+		serverSocket = new ServerSocket(9997, 100, InetAddress.getByName("172.31.1.232"));
 		System.out.println("TCP Server started " + serverSocket);
 		logger.info("TCP Server started: " + serverSocket);
 		//while(true)
